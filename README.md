@@ -62,3 +62,7 @@ Adarsh R
 ## 📌 Version
 
 v0.1 Beta
+
+## 📄 Project Documentation
+
+Project report PDF is included in this repository.
