@@ -55,7 +55,7 @@ The app helps users explore Kannada poems with explanations, meanings, favorites
 
 ## 👨‍💻 Developer
 
-Adarsh R
+Adarsha R
 
 ---
 
