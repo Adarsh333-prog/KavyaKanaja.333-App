@@ -1,34 +1,59 @@
-package com.app.kavyakanaja.ui.theme
+package com.app.kavyakanaja.data.repository
 
-import androidx.compose.material3.Typography
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
+import com.google.ai.client.generativeai.GenerativeModel
+import com.app.kavyakanaja.BuildConfig
 
-// Set of Material typography styles to start with
-val Typography = Typography(
-    bodyLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 16.sp,
-        lineHeight = 24.sp,
-        letterSpacing = 0.5.sp
+object GeminiHelper {
+
+    private val model = GenerativeModel(
+        modelName = "gemini-3-flash-preview",
+        apiKey = BuildConfig.GEMINI_API_KEY
     )
-    /* Other default text styles to override
-    titleLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 22.sp,
-        lineHeight = 28.sp,
-        letterSpacing = 0.sp
-    ),
-    labelSmall = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Medium,
-        fontSize = 11.sp,
-        lineHeight = 16.sp,
-        letterSpacing = 0.5.sp
-    )
-    */
-)
+
+    suspend fun explainPoem(
+        kannadaText: String,
+        englishMeaning: String,
+        bhavartha: String
+    ): String {
+        val prompt = """
+            You are a Kannada literature expert. Explain this Kannada poem in simple English.
+            
+            Poem in Kannada:
+            $kannadaText
+            
+            English Meaning:
+            $englishMeaning
+            
+            Bhavartha:
+            $bhavartha
+            
+            Please provide:
+            1. Simple explanation of the poem's theme
+            2. Key literary elements used
+            3. Why this poem is significant
+            4. Life lesson from this poem
+            
+            Keep it simple and easy to understand.
+        """.trimIndent()
+
+        return try {
+            val response = model.generateContent(prompt)
+            response.text ?: "Could not generate explanation"
+        } catch (e: Exception) {
+            "Error: ${e.message}"
+        }
+    }
+
+    suspend fun getWordMeaning(
+        word: String,
+        poemContext: String
+    ): String {
+        return try {
+            val prompt = "What does the Kannada word \"$word\" mean in English? Give only the meaning in 1 line."
+            val response = model.generateContent(prompt)
+            response.text?.trim() ?: "Meaning not found"
+        } catch (e: Exception) {
+            "Error: ${e.message}"
+        }
+    }
+}
